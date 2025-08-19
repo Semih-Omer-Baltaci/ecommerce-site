@@ -17,32 +17,60 @@ interface Product {
   };
 }
 
-export default function Home() {
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+export default function ProductsPage() {
+  const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [sortBy, setSortBy] = useState<string>('default');
 
-  // API'den öne çıkan ürünleri çek (ilk 4 ürün)
+  // API'den ürünleri çek
   useEffect(() => {
-    const fetchFeaturedProducts = async () => {
+    const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch('https://fakestoreapi.com/products?limit=4');
+        const response = await fetch('https://fakestoreapi.com/products');
         if (!response.ok) {
           throw new Error('Ürünler yüklenirken hata oluştu');
         }
         const data: Product[] = await response.json();
-        setFeaturedProducts(data);
+        setProducts(data);
       } catch (err) {
-        console.error('Ürünler yüklenirken hata:', err);
+        setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFeaturedProducts();
+    fetchProducts();
   }, []);
 
-  // Fiyatı Türk Lirası'na çevir
+  // Kategorileri filtrele
+  const filteredProducts = products.filter(product => {
+    if (selectedCategory === 'all') return true;
+    return product.category === selectedCategory;
+  });
+
+  // Ürünleri sırala
+  const sortedProducts = [...filteredProducts].sort((a, b) => {
+    switch (sortBy) {
+      case 'price-low':
+        return a.price - b.price;
+      case 'price-high':
+        return b.price - a.price;
+      case 'rating':
+        return b.rating.rate - a.rating.rate;
+      case 'name':
+        return a.title.localeCompare(b.title);
+      default:
+        return 0;
+    }
+  });
+
+  // Benzersiz kategorileri al
+  const categories = Array.from(new Set(products.map(product => product.category)));
+
+  // Fiyatı Türk Lirası'na çevir (yaklaşık)
   const formatPrice = (price: number) => {
     return (price * 30).toLocaleString('tr-TR', {
       style: 'currency',
@@ -50,6 +78,17 @@ export default function Home() {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     });
+  };
+
+  // Kategori adlarını Türkçe'ye çevir
+  const translateCategory = (category: string) => {
+    const translations: { [key: string]: string } = {
+      "men's clothing": "Erkek Giyim",
+      "women's clothing": "Kadın Giyim",
+      "jewelery": "Mücevher",
+      "electronics": "Elektronik"
+    };
+    return translations[category] || category;
   };
 
   return (
@@ -60,16 +99,26 @@ export default function Home() {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <Link href="/" className="text-2xl font-bold text-gray-900 hover:text-blue-600">ShopSemih</Link>
+              <Link href="/" className="text-2xl font-bold text-gray-900 hover:text-blue-600">
+                ShopSemih
+              </Link>
             </div>
             
             {/* Navigation Menu */}
             <nav className="hidden md:block">
               <div className="ml-10 flex items-baseline space-x-4">
-                <Link href="/" className="text-blue-600 font-semibold px-3 py-2 rounded-md text-sm">Ana Sayfa</Link>
-                <Link href="/products" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Ürünler</Link>
-                <Link href="/categories" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Kategoriler</Link>
-                <Link href="/contact" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">İletişim</Link>
+                <Link href="/" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                  Ana Sayfa
+                </Link>
+                <Link href="/products" className="text-blue-600 font-semibold px-3 py-2 rounded-md text-sm">
+                  Ürünler
+                </Link>
+                <Link href="/categories" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                  Kategoriler
+                </Link>
+                <Link href="/contact" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">
+                  İletişim
+                </Link>
               </div>
             </nav>
 
@@ -83,33 +132,56 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-6">
-              En İyi Ürünler
-              <br />
-              <span className="text-yellow-300">En Uygun Fiyatlarda</span>
-            </h1>
-            <p className="text-xl md:text-2xl mb-8 text-blue-100">
-              Binlerce ürün arasından seçim yapın ve hızlı teslimatın keyfini çıkarın
-            </p>
-            <Link href="/products" className="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-bold py-4 px-8 rounded-lg text-lg transition duration-300 inline-block">
-              Alışverişe Başla 🚀
-            </Link>
+      {/* Page Title */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <h1 className="text-3xl font-bold text-gray-900">Tüm Ürünler</h1>
+          <p className="mt-2 text-gray-600">
+            {loading ? 'Ürünler yükleniyor...' : `${sortedProducts.length} ürün bulundu`}
+          </p>
+        </div>
+      </div>
+
+      {/* Filter Section */}
+      <div className="bg-white border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-wrap gap-4 items-center">
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-gray-700">Kategori:</label>
+              <select 
+                className="border border-gray-300 rounded px-3 py-1 text-sm"
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+              >
+                <option value="all">Tümü</option>
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {translateCategory(category)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex items-center space-x-2">
+              <label className="text-sm font-medium text-gray-700">Sırala:</label>
+              <select 
+                className="border border-gray-300 rounded px-3 py-1 text-sm"
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value)}
+              >
+                <option value="default">Varsayılan</option>
+                <option value="price-low">Fiyat (Düşükten Yükseğe)</option>
+                <option value="price-high">Fiyat (Yüksekten Düşüğe)</option>
+                <option value="rating">En Yüksek Puanlı</option>
+                <option value="name">İsim (A-Z)</option>
+              </select>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Featured Products */}
-      <section className="py-16">
+      {/* Products Grid */}
+      <section className="py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Öne Çıkan Ürünler</h2>
-            <p className="text-gray-600 text-lg">En popüler ve kaliteli ürünlerimizi keşfedin</p>
-          </div>
-
           {/* Loading State */}
           {loading && (
             <div className="flex justify-center items-center py-12">
@@ -118,10 +190,17 @@ export default function Home() {
             </div>
           )}
 
-          {/* Product Grid */}
-          {!loading && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredProducts.map((product) => (
+          {/* Error State */}
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+              <strong>Hata:</strong> {error}
+            </div>
+          )}
+
+          {/* Products Grid */}
+          {!loading && !error && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {sortedProducts.map((product) => (
                 <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition duration-300">
                   <div className="h-48 bg-gray-100 flex items-center justify-center p-4">
                     <img 
@@ -163,15 +242,12 @@ export default function Home() {
             </div>
           )}
 
-          {/* View All Products Button */}
-          <div className="text-center mt-12">
-            <Link 
-              href="/products" 
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors inline-block"
-            >
-              Tüm Ürünleri Görüntüle
-            </Link>
-          </div>
+          {/* No Products Found */}
+          {!loading && !error && sortedProducts.length === 0 && (
+            <div className="text-center py-12">
+              <p className="text-gray-500 text-lg">Bu kategoride ürün bulunamadı.</p>
+            </div>
+          )}
         </div>
       </section>
 
