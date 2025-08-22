@@ -142,118 +142,98 @@ export default function ContactPage() {
 
                         {/* Sağ taraf - İletişim Bilgileri */}
                         <div className="space-y-8">
-                            
                             {/* İletişim Kartları */}
-                            <div className="grid grid-cols-1 gap-6">
+                            <div className="bg-white rounded-lg shadow-md p-8">
+                                <h2 className="text-2xl font-bold text-gray-900 mb-6">İletişim Bilgileri</h2>
                                 
-                                {/* Telefon */}
-                                <div className="bg-white rounded-lg shadow-md p-6 flex items-center space-x-4">
-                                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                        <span className="text-blue-600 text-xl">📞</span>
+                                <div className="space-y-6">
+                                    <div className="flex items-start space-x-4">
+                                        <div className="flex-shrink-0">
+                                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                <span className="text-blue-600 text-lg">📍</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-900">Adres</h3>
+                                            <p className="text-gray-600">Bornova, İzmir, Türkiye</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-gray-900">Telefon</h3>
-                                        <p className="text-gray-600">0530 155 29 14</p>
-                                        <p className="text-sm text-gray-500">Pazartesi - Cuma: 09:00 - 18:00</p>
-                                    </div>
-                                </div>
 
-                                {/* Email */}
-                                <div className="bg-white rounded-lg shadow-md p-6 flex items-center space-x-4">
-                                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                                        <span className="text-green-600 text-xl">📧</span>
+                                    <div className="flex items-start space-x-4">
+                                        <div className="flex-shrink-0">
+                                            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                                <span className="text-green-600 text-lg">📞</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-900">Telefon</h3>
+                                            <p className="text-gray-600">0530 155 29 14</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-gray-900">E-posta</h3>
-                                        <p className="text-gray-600">info@shopsemih.com</p>
-                                        <p className="text-sm text-gray-500">24 saat içinde yanıt veriyoruz</p>
-                                    </div>
-                                </div>
 
-                                {/* Adres */}
-                                <div className="bg-white rounded-lg shadow-md p-6 flex items-center space-x-4">
-                                    <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                                        <span className="text-orange-600 text-xl">📍</span>
+                                    <div className="flex items-start space-x-4">
+                                        <div className="flex-shrink-0">
+                                            <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                                <span className="text-red-600 text-lg">📧</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-900">E-posta</h3>
+                                            <p className="text-gray-600">info@shopsemih.com</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-gray-900">Adres</h3>
-                                        <p className="text-gray-600">Konak, İzmir</p>
-                                        <p className="text-sm text-gray-500">Türkiye</p>
-                                    </div>
-                                </div>
 
-                                {/* Çalışma Saatleri */}
-                                <div className="bg-white rounded-lg shadow-md p-6 flex items-center space-x-4">
-                                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                                        <span className="text-purple-600 text-xl">🕒</span>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-gray-900">Çalışma Saatleri</h3>
-                                        <p className="text-gray-600">Pazartesi - Cuma: 09:00 - 18:00</p>
-                                        <p className="text-gray-600">Cumartesi: 10:00 - 16:00</p>
-                                        <p className="text-sm text-gray-500">Pazar kapalı</p>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            {/* Harita Placeholder */}
-                            <div className="bg-white rounded-lg shadow-md p-6">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Konumumuz</h3>
-                                <div className="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
-                                    <div className="text-center">
-                                        <span className="text-gray-500 text-4xl block mb-2">🗺️</span>
-                                        <p className="text-gray-600">İzmir Haritası</p>
-                                        <p className="text-sm text-gray-500">Google Maps entegrasyonu</p>
+                                    <div className="flex items-start space-x-4">
+                                        <div className="flex-shrink-0">
+                                            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                                                <span className="text-purple-600 text-lg">🕒</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-900">Çalışma Saatleri</h3>
+                                            <p className="text-gray-600">Pazartesi - Cuma: 09:00 - 18:00</p>
+                                            <p className="text-gray-600">Cumartesi: 10:00 - 16:00</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
+                            {/* Google Maps */}
+                            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                                <div className="p-6 border-b">
+                                    <h2 className="text-2xl font-bold text-gray-900">Konumumuz</h2>
+                                    <p className="text-gray-600 mt-2">Mağazamızı ziyaret etmek için harita üzerinden konumumuzu görebilirsiniz.</p>
+                                </div>
+                                <div className="relative h-96">
+                                    <iframe
+                                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3124.0123456789!2d27.1428!3d38.4192!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14bbd862a762cacd%3A0x628cbba1a59ce8de!2sKonak%2C%20%C4%B0zmir!5e0!3m2!1str!2str!4v1234567890123!5m2!1str!2str"
+                                        width="100%"
+                                        height="100%"
+                                        style={{ border: '0' }}
+                                        allowFullScreen
+                                        loading="lazy"
+                                        referrerPolicy="no-referrer-when-downgrade"
+                                        title="ShopSemih Konum"
+                                    ></iframe>
+                                </div>
+                                <div className="p-4 bg-gray-50">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm text-gray-600">📍 Konak, İzmir</span>
+                                        <a 
+                                            href="https://maps.google.com/?q=Bornova,İzmir" 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                                        >
+                                            Google Maps&apos;te Aç →
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
-
-            {/* Footer */}
-            <footer className="bg-gray-800 text-white">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                        <div>
-                            <h3 className="text-lg font-semibold mb-4">ShopSemih</h3>
-                            <p className="text-gray-300">En kaliteli ürünler, en uygun fiyatlar. Güvenli alışverişin adresi.</p>
-                        </div>
-                        <div>
-                            <h4 className="text-lg font-semibold mb-4">Hızlı Linkler</h4>
-                            <ul className="space-y-2">
-                                <li><Link href="/" className="text-gray-300 hover:text-white">Ana Sayfa</Link></li>
-                                <li><Link href="/products" className="text-gray-300 hover:text-white">Ürünler</Link></li>
-                                <li><Link href="/categories" className="text-gray-300 hover:text-white">Kategoriler</Link></li>
-                                <li><Link href="/contact" className="text-gray-300 hover:text-white">İletişim</Link></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="text-lg font-semibold mb-4">Müşteri Hizmetleri</h4>
-                            <ul className="space-y-2">
-                                <li><Link href="#" className="text-gray-300 hover:text-white">SSS</Link></li>
-                                <li><Link href="#" className="text-gray-300 hover:text-white">İade & Değişim</Link></li>
-                                <li><Link href="#" className="text-gray-300 hover:text-white">Kargo Takibi</Link></li>
-                                <li><Link href="#" className="text-gray-300 hover:text-white">Destek</Link></li>
-                            </ul>
-                        </div>
-                        <div>
-                            <h4 className="text-lg font-semibold mb-4">İletişim</h4>
-                            <div className="space-y-2 text-gray-300">
-                                <p>📞 0530 155 29 14</p>
-                                <p>📧 info@shopsemih.com</p>
-                                <p>📍 İzmir, Türkiye</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="border-t border-gray-700 mt-8 pt-8 text-center">
-                        <p className="text-gray-300">&copy; 2025 ShopSemih. Tüm hakları saklıdır.</p>
-                    </div>
-                </div>
-            </footer>
             
         </div>
     )

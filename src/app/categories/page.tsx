@@ -212,47 +212,6 @@ export default function CategoriesPage() {
           )}
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">ShopSemih</h3>
-              <p className="text-gray-300">En kaliteli ürünler, en uygun fiyatlar. Güvenli alışverişin adresi.</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Hızlı Linkler</h4>
-              <ul className="space-y-2">
-                <li><Link href="/" className="text-gray-300 hover:text-white">Ana Sayfa</Link></li>
-                <li><Link href="/products" className="text-gray-300 hover:text-white">Ürünler</Link></li>
-                <li><Link href="/categories" className="text-gray-300 hover:text-white">Kategoriler</Link></li>
-                <li><Link href="/contact" className="text-gray-300 hover:text-white">İletişim</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Müşteri Hizmetleri</h4>
-              <ul className="space-y-2">
-                <li><Link href="#" className="text-gray-300 hover:text-white">SSS</Link></li>
-                <li><Link href="#" className="text-gray-300 hover:text-white">İade & Değişim</Link></li>
-                <li><Link href="#" className="text-gray-300 hover:text-white">Kargo Takibi</Link></li>
-                <li><Link href="#" className="text-gray-300 hover:text-white">Destek</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">İletişim</h4>
-              <div className="space-y-2 text-gray-300">
-                <p>📞 +90 555 123 45 67</p>
-                <p>📧 info@shopsemih.com</p>
-                <p>📍 Beyoğlu/İstanbul</p>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center">
-            <p className="text-gray-300">&copy; 2024 ShopSemih. Tüm hakları saklıdır.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

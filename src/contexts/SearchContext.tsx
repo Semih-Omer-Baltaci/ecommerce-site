@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 
 // Arama state tipi
 interface SearchState {
@@ -28,6 +28,7 @@ interface Product {
 interface SearchContextType {
   searchState: SearchState;
   setQuery: (query: string) => void;
+  setSearchQuery: (query: string) => void;
   performSearch: (products: Product[], query: string) => void;
   clearSearch: () => void;
 }
@@ -48,15 +49,20 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
   const [searchState, setSearchState] = useState<SearchState>(initialState);
 
   // Arama query'sini güncelle
-  const setQuery = (query: string) => {
+  const setQuery = useCallback((query: string) => {
     setSearchState(prev => ({
       ...prev,
       query: query.trim(),
     }));
-  };
+  }, []);
+
+  // Header için ayrı searchQuery setter (alias)
+  const setSearchQuery = useCallback((query: string) => {
+    setQuery(query);
+  }, [setQuery]);
 
   // Arama yap
-  const performSearch = (products: Product[], query: string) => {
+  const performSearch = useCallback((products: Product[], query: string) => {
     if (!query.trim()) {
       setSearchState(prev => ({
         ...prev,
@@ -97,16 +103,17 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
       totalResults: sortedResults.length,
       isSearching: false,
     }));
-  };
+  }, []);
 
   // Aramayı temizle
-  const clearSearch = () => {
+  const clearSearch = useCallback(() => {
     setSearchState(initialState);
-  };
+  }, []);
 
   const value: SearchContextType = {
     searchState,
     setQuery,
+    setSearchQuery,
     performSearch,
     clearSearch,
   };

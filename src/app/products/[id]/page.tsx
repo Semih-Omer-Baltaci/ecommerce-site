@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { useCart } from "../../../contexts/CartContext";
+import { useFavorites } from "../../../contexts/FavoritesContext";
 
 // Ürün tipi tanımlaması
 interface Product {
@@ -24,6 +25,7 @@ export default function ProductDetailPage() {
   const params = useParams();
   const productId = params.id;
   const { addToCart, getItemQuantity } = useCart();
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
@@ -94,6 +96,24 @@ export default function ProductDetailPage() {
     }
   };
 
+  // Favori toggle
+  const handleFavoriteToggle = () => {
+    if (product) {
+      if (isFavorite(product.id)) {
+        removeFromFavorites(product.id);
+      } else {
+        addToFavorites({
+          id: product.id,
+          title: product.title,
+          price: product.price,
+          image: product.image,
+          category: product.category,
+          rating: product.rating
+        });
+      }
+    }
+  };
+
   // Sepetteki miktar
   const cartQuantity = product ? getItemQuantity(product.id) : 0;
 
@@ -121,8 +141,7 @@ export default function ProductDetailPage() {
   }, [productId]);
 
   // Miktar artırma/azaltma
-  const increaseQuantity = () => setQuantity(prev => prev + 1);
-  const decreaseQuantity = () => setQuantity(prev => prev > 1 ? prev - 1 : 1);
+ 
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -244,17 +263,17 @@ export default function ProductDetailPage() {
                 </h3>
                 <div className="flex items-center space-x-3">
                   <button
-                    onClick={decreaseQuantity}
-                    className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-700 font-bold text-lg"
                   >
                     -
                   </button>
-                  <span className="w-16 text-center text-lg font-medium">
+                  <span className="w-16 text-center text-lg font-medium text-gray-900 bg-gray-50 py-2 rounded-md">
                     {quantity}
                   </span>
                   <button
-                    onClick={increaseQuantity}
-                    className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors"
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors text-gray-700 font-bold text-lg"
                   >
                     +
                   </button>
@@ -277,8 +296,18 @@ export default function ProductDetailPage() {
                 )}
                 
                 <div className="grid grid-cols-2 gap-4">
-                  <button className="border border-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:bg-gray-50 transition-colors">
-                    ♡ Favorilere Ekle
+                  <button 
+                    onClick={handleFavoriteToggle}
+                    className={`p-3 rounded-lg border transition-colors ${
+                      isFavorite(product.id) 
+                        ? 'bg-red-50 border-red-200 text-red-600' 
+                        : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                    }`}
+                    title={isFavorite(product.id) ? "Favorilerden çıkar" : "Favorilere ekle"}
+                  >
+                    <svg className="w-6 h-6" fill={isFavorite(product.id) ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    </svg>
                   </button>
                   <Link 
                     href="/cart"
@@ -317,49 +346,6 @@ export default function ProductDetailPage() {
           </div>
         )}
       </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white py-12 mt-16">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-xl font-bold mb-4">ShopSemih</h3>
-              <p className="text-gray-300">
-                En kaliteli ürünler, en uygun fiyatlarla sizlerle.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Hızlı Linkler</h4>
-              <ul className="space-y-2">
-                <li><Link href="/" className="text-gray-300 hover:text-white">Ana Sayfa</Link></li>
-                <li><Link href="/products" className="text-gray-300 hover:text-white">Ürünler</Link></li>
-                <li><Link href="/categories" className="text-gray-300 hover:text-white">Kategoriler</Link></li>
-                <li><Link href="/contact" className="text-gray-300 hover:text-white">İletişim</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Müşteri Hizmetleri</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-300 hover:text-white">Yardım</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white">İade & Değişim</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white">Kargo Takibi</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white">SSS</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">İletişim</h4>
-              <ul className="space-y-2 text-gray-300">
-                <li>📞 +90 555 123 45 67</li>
-                <li>✉️ info@shopsemih.com</li>
-                <li>📍 İstanbul, Türkiye</li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
-            <p>&copy; 2024 ShopSemih. Tüm hakları saklıdır.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

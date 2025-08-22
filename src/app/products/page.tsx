@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '../../contexts/CartContext';
+import { useFavorites } from '../../contexts/FavoritesContext';
 import { useSearch } from '../../contexts/SearchContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { useRouter } from 'next/navigation';
 
 // Ürün tipi tanımı
@@ -28,7 +30,9 @@ export default function ProductsPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('name');
   const { addToCart, state } = useCart();
+  const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const { setQuery } = useSearch();
+  const { isDarkMode, toggleTheme } = useTheme();
   const [localSearchQuery, setLocalSearchQuery] = useState('');
   const router = useRouter();
 
@@ -110,6 +114,22 @@ export default function ProductsPage() {
     });
   };
 
+  // Favori toggle
+  const handleFavoriteToggle = (product: Product) => {
+    if (isFavorite(product.id)) {
+      removeFromFavorites(product.id);
+    } else {
+      addToFavorites({
+        id: product.id,
+        title: product.title,
+        price: product.price,
+        image: product.image,
+        category: product.category,
+        rating: product.rating
+      });
+    }
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (localSearchQuery.trim()) {
@@ -119,58 +139,25 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-blue-600">
-              ShopSemih
-            </Link>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/" className="text-gray-600 hover:text-blue-600 transition-colors">
-                Ana Sayfa
-              </Link>
-              <Link href="/products" className="text-blue-600 font-semibold">
-                Ürünler
-              </Link>
-              <Link href="/categories" className="text-gray-600 hover:text-blue-600 transition-colors">
-                Kategoriler
-              </Link>
-              <Link href="/contact" className="text-gray-600 hover:text-blue-600 transition-colors">
-                İletişim
-              </Link>
-              <Link href="/cart" className="relative text-gray-600 hover:text-blue-600 transition-colors">
-                🛒 Sepet
-                {state.totalItems > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {state.totalItems}
-                  </span>
-                )}
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       {/* Page Title */}
-      <div className="bg-white border-b">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <h1 className="text-3xl font-bold text-gray-900">Tüm Ürünler</h1>
-          <p className="mt-2 text-gray-600">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Tüm Ürünler</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-400">
             {loading ? 'Ürünler yükleniyor...' : `${sortedProducts.length} ürün bulundu`}
           </p>
         </div>
       </div>
 
       {/* Filter Section */}
-      <div className="bg-white border-b">
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-wrap gap-4 items-center">
             <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-gray-700">Kategori:</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Kategori:</label>
               <select 
-                className="border border-gray-300 rounded px-3 py-1 text-sm"
+                className="border border-gray-300 dark:border-gray-600 rounded px-3 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200"
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
@@ -182,36 +169,19 @@ export default function ProductsPage() {
                 ))}
               </select>
             </div>
+            
             <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium text-gray-700">Sırala:</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Sırala:</label>
               <select 
-                className="border border-gray-300 rounded px-3 py-1 text-sm"
+                className="border border-gray-300 dark:border-gray-600 rounded px-3 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-200"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
-                <option value="default">Varsayılan</option>
-                <option value="price-low">Fiyat (Düşükten Yükseğe)</option>
-                <option value="price-high">Fiyat (Yüksekten Düşüğe)</option>
-                <option value="rating">En Yüksek Puanlı</option>
-                <option value="name">İsim (A-Z)</option>
+                <option value="name">İsme Göre</option>
+                <option value="price-low">Fiyat (Düşük-Yüksek)</option>
+                <option value="price-high">Fiyat (Yüksek-Düşük)</option>
+                <option value="rating">Puana Göre</option>
               </select>
-            </div>
-            <div className="flex items-center space-x-2">
-              <form onSubmit={handleSearch}>
-                <input 
-                  type="search" 
-                  value={localSearchQuery} 
-                  onChange={(e) => setLocalSearchQuery(e.target.value)} 
-                  placeholder="Arama..." 
-                  className="border border-gray-300 rounded px-3 py-1 text-sm"
-                />
-                <button 
-                  type="submit" 
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm transition-colors"
-                >
-                  Ara
-                </button>
-              </form>
             </div>
           </div>
         </div>
@@ -223,14 +193,14 @@ export default function ProductsPage() {
           {/* Loading State */}
           {loading && (
             <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-              <span className="ml-3 text-gray-600">Ürünler yükleniyor...</span>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
+              <span className="ml-3 text-gray-600 dark:text-gray-400">Ürünler yükleniyor...</span>
             </div>
           )}
 
           {/* Error State */}
           {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+            <div className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-6">
               <strong>Hata:</strong> {error}
             </div>
           )}
@@ -239,46 +209,58 @@ export default function ProductsPage() {
           {!loading && !error && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {sortedProducts.map((product) => (
-                <div key={product.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
-                  <Link href={`/products/${product.id}`}>
-                    <div className="aspect-square p-4 flex items-center justify-center bg-gray-50">
+                <div key={product.id} className="bg-white dark:bg-gray-700 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                  <div className="relative h-64 bg-gray-100 dark:bg-gray-600">
+                    <Link href={`/products/${product.id}`}>
                       <Image
                         src={product.image}
                         alt={product.title}
-                        width={200}
-                        height={200}
-                        className="max-w-full max-h-full object-contain"
+                        fill
+                        className="object-contain p-4 hover:scale-105 transition-transform cursor-pointer"
                       />
-                    </div>
-                  </Link>
+                    </Link>
+                    {/* Favori Butonu */}
+                    <button
+                      onClick={() => handleFavoriteToggle(product)}
+                      className="absolute top-2 right-2 p-2 bg-white dark:bg-gray-700 rounded-full shadow-md hover:shadow-lg transition-all"
+                      title={isFavorite(product.id) ? "Favorilerden çıkar" : "Favorilere ekle"}
+                    >
+                      <svg 
+                        className={`w-5 h-5 ${isFavorite(product.id) ? 'text-red-500 fill-current' : 'text-gray-400 dark:text-gray-500'}`} 
+                        viewBox="0 0 20 20"
+                      >
+                        <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
                   <div className="p-4">
-                    <div className="text-xs text-blue-600 font-medium mb-1">
+                    <div className="text-xs text-blue-600 dark:text-blue-400 font-medium mb-1">
                       {translateCategory(product.category)}
                     </div>
                     <Link href={`/products/${product.id}`}>
-                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 hover:text-blue-600 transition-colors">
+                      <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 line-clamp-2 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                         {product.title}
                       </h3>
                     </Link>
                     <div className="flex items-center mb-2">
-                      <div className="flex text-yellow-400 text-sm">
+                      <div className="flex text-yellow-400 dark:text-yellow-300 text-sm">
                         {[...Array(5)].map((_, i) => (
                           <span key={i}>
                             {i < Math.floor(product.rating.rate) ? '★' : '☆'}
                           </span>
                         ))}
                       </div>
-                      <span className="text-gray-500 text-sm ml-1">
+                      <span className="text-gray-500 dark:text-gray-400 text-sm ml-1">
                         ({product.rating.rate})
                       </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <p className="text-xl font-bold text-green-600">
+                      <p className="text-xl font-bold text-green-600 dark:text-green-400">
                         {formatPrice(product.price)}
                       </p>
                       <button
                         onClick={() => handleAddToCart(product)}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-sm transition-colors"
+                        className="bg-blue-600 dark:bg-blue-400 hover:bg-blue-700 dark:hover:bg-blue-300 text-white px-3 py-1.5 rounded text-sm transition-colors"
                       >
                         Sepete Ekle
                       </button>
@@ -292,52 +274,11 @@ export default function ProductsPage() {
           {/* No Products Found */}
           {!loading && !error && sortedProducts.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">Bu kategoride ürün bulunamadı.</p>
+              <p className="text-gray-500 dark:text-gray-400 text-lg">Bu kategoride ürün bulunamadı.</p>
             </div>
           )}
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-gray-800 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold mb-4">ShopSemih</h3>
-              <p className="text-gray-300">En kaliteli ürünler, en uygun fiyatlar. Güvenli alışverişin adresi.</p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Hızlı Linkler</h4>
-              <ul className="space-y-2">
-                <li><Link href="/" className="text-gray-300 hover:text-white">Ana Sayfa</Link></li>
-                <li><Link href="/products" className="text-gray-300 hover:text-white">Ürünler</Link></li>
-                <li><Link href="/categories" className="text-gray-300 hover:text-white">Kategoriler</Link></li>
-                <li><Link href="/contact" className="text-gray-300 hover:text-white">İletişim</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Müşteri Hizmetleri</h4>
-              <ul className="space-y-2">
-                <li><Link href="#" className="text-gray-300 hover:text-white">SSS</Link></li>
-                <li><Link href="#" className="text-gray-300 hover:text-white">İade & Değişim</Link></li>
-                <li><Link href="#" className="text-gray-300 hover:text-white">Kargo Takibi</Link></li>
-                <li><Link href="#" className="text-gray-300 hover:text-white">Destek</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">İletişim</h4>
-              <div className="space-y-2 text-gray-300">
-                <p>📞 +90 555 123 45 67</p>
-                <p>📧 info@shopsemih.com</p>
-                <p>📍 Beyoğlu/İstanbul</p>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-gray-700 mt-8 pt-8 text-center">
-            <p className="text-gray-300">&copy; 2024 ShopSemih. Tüm hakları saklıdır.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
