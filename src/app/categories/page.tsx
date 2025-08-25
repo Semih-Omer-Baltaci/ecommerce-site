@@ -120,35 +120,6 @@ export default function CategoriesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div className="flex-shrink-0">
-              <Link href="/" className="text-2xl font-bold text-gray-900 hover:text-blue-600">ShopSemih</Link>
-            </div>
-            
-            {/* Navigation Menu */}
-            <nav className="hidden md:block">
-              <div className="ml-10 flex items-baseline space-x-4">
-                <Link href="/" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Ana Sayfa</Link>
-                <Link href="/products" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Ürünler</Link>
-                <Link href="/categories" className="text-blue-600 font-semibold px-3 py-2 rounded-md text-sm">Kategoriler</Link>
-                <Link href="/contact" className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">İletişim</Link>
-              </div>
-            </nav>
-
-            {/* Cart Icon */}
-            <div className="flex items-center">
-              <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium">
-                🛒 Sepet (0)
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Page Title */}
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

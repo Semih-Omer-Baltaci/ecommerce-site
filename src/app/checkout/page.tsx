@@ -53,6 +53,28 @@ export default function CheckoutPage() {
     }
   }, [cartState.totalItems, router]);
 
+  // Redirect if user is not authenticated - more aggressive check
+  useEffect(() => {
+    if (!authState.isAuthenticated) {
+      toast.error('Ödeme yapabilmek için giriş yapmanız gerekiyor');
+      router.replace('/login'); // replace instead of push to prevent back navigation
+      return;
+    }
+  }, [authState.isAuthenticated, router]);
+
+  // Early return if not authenticated to prevent rendering
+  if (!authState.isAuthenticated || cartState.totalItems === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+        <Toaster position="top-right" />
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400">Yönlendiriliyor...</p>
+        </div>
+      </div>
+    );
+  }
+
   // Calculate totals
   const subtotal = cartState.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const shippingCost = subtotal > 500 ? 0 : 29.99;
@@ -171,10 +193,6 @@ export default function CheckoutPage() {
       setLoading(false);
     }
   };
-
-  if (cartState.totalItems === 0) {
-    return null;
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">

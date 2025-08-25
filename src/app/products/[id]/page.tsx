@@ -86,7 +86,7 @@ export default function ProductDetailPage() {
         addToCart({
           id: product.id,
           title: product.title,
-          price: product.price,
+          price: product.price * 30, // TL'ye çevrilmiş fiyat gönder
           image: product.image,
           category: product.category,
         });
@@ -105,7 +105,7 @@ export default function ProductDetailPage() {
         addToFavorites({
           id: product.id,
           title: product.title,
-          price: product.price,
+          price: product.price * 30, // TL'ye çevrilmiş fiyat gönder
           image: product.image,
           category: product.category,
           rating: product.rating
@@ -145,31 +145,6 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-blue-600">
-              ShopSemih
-            </Link>
-            <nav className="hidden md:flex space-x-8">
-              <Link href="/" className="text-gray-600 hover:text-blue-600 transition-colors">
-                Ana Sayfa
-              </Link>
-              <Link href="/products" className="text-gray-600 hover:text-blue-600 transition-colors">
-                Ürünler
-              </Link>
-              <Link href="/categories" className="text-gray-600 hover:text-blue-600 transition-colors">
-                Kategoriler
-              </Link>
-              <Link href="/contact" className="text-gray-600 hover:text-blue-600 transition-colors">
-                İletişim
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
-
       {/* Breadcrumb */}
       <div className="container mx-auto px-4 py-4">
         <nav className="text-sm">

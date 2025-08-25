@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
+import { Toaster } from 'react-hot-toast'; // Toaster component'i ekliyoruz
 
 export default function CartPage() {
   const { state, updateQuantity, removeFromCart, clearCart } = useCart();
@@ -32,6 +33,7 @@ export default function CartPage() {
   if (state.items.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50 py-12">
+        <Toaster position="top-right" />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-8">Sepetim</h1>
           
