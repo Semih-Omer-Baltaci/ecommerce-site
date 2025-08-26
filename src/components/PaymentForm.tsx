@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { stripePromise } from '../lib/stripe';
+import { useTheme } from '@/contexts/ThemeContext';
 import type { PaymentIntent } from '@stripe/stripe-js';
 
 interface PaymentFormProps {
@@ -15,6 +16,7 @@ interface PaymentFormProps {
 const PaymentFormContent: React.FC<PaymentFormProps> = ({ amount, onSuccess, onError, loading = false }) => {
   const stripe = useStripe();
   const elements = useElements();
+  const { isDarkMode } = useTheme();
   
   const [isProcessing, setIsProcessing] = useState(false);
   const [cardName, setCardName] = useState('');
@@ -119,21 +121,27 @@ const PaymentFormContent: React.FC<PaymentFormProps> = ({ amount, onSuccess, onE
     }
   };
 
-  // Stripe CardElement styling
+  // Stripe CardElement styling with dynamic colors for better visibility
   const cardElementOptions = {
     style: {
       base: {
         fontSize: '16px',
-        color: '#424770',
-        fontFamily: 'Arial, sans-serif',
+        color: isDarkMode ? '#ffffff' : '#1f2937', // White text in dark mode, dark gray in light mode
+        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         fontSmoothing: 'antialiased',
         '::placeholder': {
-          color: '#aab7c4',
+          color: isDarkMode ? '#9ca3af' : '#6b7280', // Light gray placeholders
         },
         backgroundColor: 'transparent',
+        iconColor: isDarkMode ? '#ffffff' : '#1f2937', // Icon colors
       },
       invalid: {
-        color: '#9e2146',
+        color: '#ef4444', // Red for invalid input
+        iconColor: '#ef4444',
+      },
+      complete: {
+        color: isDarkMode ? '#10b981' : '#059669', // Green for completed fields
+        iconColor: isDarkMode ? '#10b981' : '#059669',
       },
     },
     hidePostalCode: true,
@@ -164,8 +172,8 @@ const PaymentFormContent: React.FC<PaymentFormProps> = ({ amount, onSuccess, onE
           value={cardName}
           onChange={(e) => setCardName(e.target.value)}
           placeholder="İsim Soyisim"
-          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white transition-colors ${
-            errors.cardName ? 'border-red-500' : 'border-gray-300'
+          className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 transition-colors ${
+            errors.cardName ? 'border-red-500' : ''
           }`}
         />
         {errors.cardName && (
