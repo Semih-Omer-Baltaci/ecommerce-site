@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useParams } from "next/navigation";
 import { useCart } from "../../../contexts/CartContext";
 import { useFavorites } from "../../../contexts/FavoritesContext";
+import { useFetch } from "../../../hooks/useFetch";
 
 // Ürün tipi tanımlaması
 interface Product {
@@ -27,9 +28,7 @@ export default function ProductDetailPage() {
   const { addToCart, getItemQuantity } = useCart();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   
-  const [product, setProduct] = useState<Product | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: product, loading, error } = useFetch<Product>(`https://fakestoreapi.com/products/${productId}`);
   const [quantity, setQuantity] = useState(1);
 
   // Fiyat formatı (USD -> TL)
@@ -79,19 +78,17 @@ export default function ProductDetailPage() {
     return <div className="flex items-center">{stars}</div>;
   };
 
-  // Sepete ekleme fonksiyonu
+  // Sepete ekleme fonksiyonu - Tek action ile performanslı
   const handleAddToCart = () => {
     if (product) {
-      for (let i = 0; i < quantity; i++) {
-        addToCart({
-          id: product.id,
-          title: product.title,
-          price: product.price * 30, // TL'ye çevrilmiş fiyat gönder
-          image: product.image,
-          category: product.category,
-        });
-      }
-      // Başarı mesajı gösterebiliriz (şimdilik console)
+      addToCart({
+        id: product.id,
+        title: product.title,
+        price: product.price * 30, // TL'ye çevrilmiş fiyat gönder
+        image: product.image,
+        category: product.category,
+      }, quantity); // Tek seferde istenen miktarı ekle
+      
       console.log(`${quantity} adet ${product.title} sepete eklendi`);
     }
   };
@@ -116,32 +113,6 @@ export default function ProductDetailPage() {
 
   // Sepetteki miktar
   const cartQuantity = product ? getItemQuantity(product.id) : 0;
-
-  // API'den ürün verilerini çek
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`https://fakestoreapi.com/products/${productId}`);
-        if (!response.ok) {
-          throw new Error('Ürün bulunamadı');
-        }
-        const data: Product = await response.json();
-        setProduct(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (productId) {
-      fetchProduct();
-    }
-  }, [productId]);
-
-  // Miktar artırma/azaltma
- 
 
   return (
     <div className="min-h-screen bg-gray-50">

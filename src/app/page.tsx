@@ -2,9 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useCart } from "../contexts/CartContext";
 import { useFavorites } from "../contexts/FavoritesContext";
+import { useFetch } from "../hooks/useFetch";
 import HeroSlider from "../components/HeroSlider";
 
 // Ürün tipi tanımı
@@ -22,31 +23,9 @@ interface Product {
 }
 
 export default function Home() {
-  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [, setError] = useState<string | null>(null);
+  const { data: featuredProducts, loading, error } = useFetch<Product[]>('https://fakestoreapi.com/products?limit=4');
   const { addToCart } = useCart();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
-
-  useEffect(() => {
-    const fetchFeaturedProducts = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('https://fakestoreapi.com/products?limit=4');
-        if (!response.ok) {
-          throw new Error('Ürünler yüklenirken hata oluştu');
-        }
-        const data: Product[] = await response.json();
-        setFeaturedProducts(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFeaturedProducts();
-  }, []);
 
   // Fiyatı Türk Lirası'na çevir
   const formatPrice = (price: number) => {
@@ -109,7 +88,7 @@ export default function Home() {
           )}
 
           {/* Product Grid */}
-          {!loading && (
+          {!loading && featuredProducts && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {featuredProducts.map((product) => (
                 <div key={product.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-700/30 overflow-hidden hover:shadow-lg dark:hover:shadow-gray-700/50 transition-shadow duration-300 border dark:border-gray-700">

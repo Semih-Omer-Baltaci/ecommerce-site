@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '../../contexts/CartContext';
@@ -8,6 +8,7 @@ import { useFavorites } from '../../contexts/FavoritesContext';
 import { useSearch } from '../../contexts/SearchContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useRouter } from 'next/navigation';
+import { useFetch } from '../../hooks/useFetch';
 
 // Ürün tipi tanımı
 interface Product {
@@ -24,9 +25,7 @@ interface Product {
 }
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: products, loading, error } = useFetch<Product[]>('https://fakestoreapi.com/products');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('name');
   const { addToCart, state } = useCart();
@@ -36,35 +35,14 @@ export default function ProductsPage() {
   const [localSearchQuery, setLocalSearchQuery] = useState('');
   const router = useRouter();
 
-  // API'den ürünleri çek
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch('https://fakestoreapi.com/products');
-        if (!response.ok) {
-          throw new Error('Ürünler yüklenirken hata oluştu');
-        }
-        const data: Product[] = await response.json();
-        setProducts(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Bilinmeyen hata');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
-
   // Kategorileri filtrele
-  const filteredProducts = products.filter(product => {
+  const filteredProducts = products?.filter(product => {
     if (selectedCategory === 'all') return true;
     return product.category === selectedCategory;
   });
 
   // Ürünleri sırala
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
+  const sortedProducts = [...filteredProducts || []].sort((a, b) => {
     switch (sortBy) {
       case 'price-low':
         return a.price - b.price;
@@ -80,7 +58,7 @@ export default function ProductsPage() {
   });
 
   // Benzersiz kategorileri al
-  const categories = Array.from(new Set(products.map(product => product.category)));
+  const categories = Array.from(new Set(products?.map(product => product.category) || []));
 
   // Fiyatı Türk Lirası'na çevir (yaklaşık)
   const formatPrice = (price: number) => {
@@ -145,7 +123,7 @@ export default function ProductsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Tüm Ürünler</h1>
           <p className="mt-2 text-gray-600 dark:text-gray-400">
-            {loading ? 'Ürünler yükleniyor...' : `${sortedProducts.length} ürün bulundu`}
+            {loading ? 'Ürünler yükleniyor...' : `${sortedProducts?.length} ürün bulundu`}
           </p>
         </div>
       </div>
@@ -208,7 +186,7 @@ export default function ProductsPage() {
           {/* Products Grid */}
           {!loading && !error && (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {sortedProducts.map((product) => (
+              {sortedProducts?.map((product) => (
                 <div key={product.id} className="bg-white dark:bg-gray-700 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                   <div className="relative h-64 bg-gray-100 dark:bg-gray-600">
                     <Link href={`/products/${product.id}`}>
@@ -272,7 +250,7 @@ export default function ProductsPage() {
           )}
 
           {/* No Products Found */}
-          {!loading && !error && sortedProducts.length === 0 && (
+          {!loading && !error && sortedProducts?.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-500 dark:text-gray-400 text-lg">Bu kategoride ürün bulunamadı.</p>
             </div>
